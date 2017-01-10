@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import java.util.List;
 
@@ -41,30 +39,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        setSupportActionBar(binding.toolbar);
     }
 
     @Override
@@ -85,10 +62,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Contributor>> call, Response<List<Contributor>> response) {
                 if (response.isSuccessful()) {
+                    String responseBody = "GitHub Repo Contributions\n";
                     for (Contributor contributor : response.body()) {
                         Log.i(TAG, "onResponse: contributor: " + contributor);
-                        binding.tv1.setText(binding.tv1.getText() + "\n" + contributor);
+                        responseBody += contributor.getUsername() + " -> " + contributor.getContributions() + "\n";
                     }
+                    binding.tv1.setText(responseBody);
                 } else {
                     Log.e(TAG, "onResponse: " + response.code() + " " + response.message());
                 }
@@ -105,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         Retrofit retrofit = app.getRetrofit2Helper().getFormFieldRetrofit();
 
         FormField formField = retrofit.create(FormField.class);
-        Call<User> call = formField.createUser("Barbie Girl", "17th Oct");
+        Call<User> call = formField.createUser("hy-1710", "17th Oct");
 
         call.enqueue(new Callback<User>() {
             @Override
@@ -113,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     User user = response.body();
                     Log.i(TAG, "onResponse: user: " + user);
-                    binding.tv2.setText(user.toString());
+                    binding.tv2.setText("Birth date\n" + user.getFirstName() + " -> " + user.getBirthDate());
                 } else {
                     Log.e(TAG, "onResponse: " + response.code() + " " + response.message());
                 }
@@ -131,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         FormField2 formField2 = retrofit.create(FormField2.class);
         Call<User> call = formField2.createUser(new ArrayMap<String, String>() {{
-            put("name", "Android Developer");
+            put("name", "kasim1011");
             put("birth_date", "10th Nov");
         }});
 
@@ -141,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     User user = response.body();
                     Log.i(TAG, "onResponse: user: " + user);
-                    binding.tv3.setText(user.toString());
+                    binding.tv3.setText("Birth date\n" + user.getFirstName() + " -> " + user.getBirthDate());
                 } else {
                     Log.e(TAG, "onResponse: " + response.code() + " " + response.message());
                 }
