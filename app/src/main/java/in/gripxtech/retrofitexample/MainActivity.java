@@ -1,5 +1,6 @@
 package in.gripxtech.retrofitexample;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import in.gripxtech.retrofitexample.databinding.ActivityMainBinding;
 import in.gripxtech.retrofitexample.models.http.Contributor;
 import in.gripxtech.retrofitexample.models.http.FormField;
 import in.gripxtech.retrofitexample.models.http.FormField2;
@@ -29,12 +31,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private App app;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         app = (App) getApplication();
     }
 
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         Retrofit retrofit = app.getRetrofit2Helper().getGitHubRetrofit();
 
         GitHub gitHub = retrofit.create(GitHub.class);
-        Call<List<Contributor>> call = gitHub.contributors("hy-1710", "Intent-example");
+        Call<List<Contributor>> call = gitHub.contributors("hy-1710", "retrofit_example");
 
         call.enqueue(new Callback<List<Contributor>>() {
             @Override
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     for (Contributor contributor : response.body()) {
                         Log.i(TAG, "onResponse: contributor: " + contributor);
+                        binding.tv1.setText(binding.tv1.getText() + "\n" + contributor);
                     }
                 } else {
                     Log.e(TAG, "onResponse: " + response.code() + " " + response.message());
@@ -102,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         Retrofit retrofit = app.getRetrofit2Helper().getFormFieldRetrofit();
 
         FormField formField = retrofit.create(FormField.class);
-        Call<User> call = formField.createUser("Hiteshri Yagnik", "17th Oct, 1995");
+        Call<User> call = formField.createUser("Barbie Girl", "17th Oct");
 
         call.enqueue(new Callback<User>() {
             @Override
@@ -110,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     User user = response.body();
                     Log.i(TAG, "onResponse: user: " + user);
+                    binding.tv2.setText(user.toString());
                 } else {
                     Log.e(TAG, "onResponse: " + response.code() + " " + response.message());
                 }
@@ -127,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
 
         FormField2 formField2 = retrofit.create(FormField2.class);
         Call<User> call = formField2.createUser(new ArrayMap<String, String>() {{
-            put("name", "Kasim Rangwala");
-            put("birth_date", "10th Nov, 1991");
+            put("name", "Android Developer");
+            put("birth_date", "10th Nov");
         }});
 
         call.enqueue(new Callback<User>() {
@@ -137,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     User user = response.body();
                     Log.i(TAG, "onResponse: user: " + user);
+                    binding.tv3.setText(user.toString());
                 } else {
                     Log.e(TAG, "onResponse: " + response.code() + " " + response.message());
                 }
